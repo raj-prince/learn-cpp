@@ -30,4 +30,12 @@ int main() {
         cout << x << " ";
     });
 
+    vector<int> sorted_v = {2, 5, 6, 8, 10, 13};
+
+    // cnt value b/w [3, 6]
+    vector<int>::iterator lower_it = lower_bound(sorted_v.begin(), sorted_v.end(), 3); // return first value equal or greater than 3
+    vector<int>::iterator upper_it = upper_bound(sorted_v.begin(), sorted_v.end(), 6); // returns first value greater than 6
+    int cnt = distance(lower_it, upper_it);
+    cout << "Count: " << cnt << endl;
+    return 0;
 }
