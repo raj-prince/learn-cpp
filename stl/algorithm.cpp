@@ -20,4 +20,14 @@ int main() {
     bool any_even = any_of(v.begin(), v.end(), [](int i) {
         return i % 2 == 0;
     });
+
+    vector<int> heap_v = {3, 6, 7, 9, 4};
+    // check, is this vector hippified.
+    if (!is_heap(heap_v.begin(), heap_v.end())) {
+        make_heap(heap_v.begin(), heap_v.end());
+    }
+    for_each(heap_v.begin(), heap_v.end(), [](int x) {
+        cout << x << " ";
+    });
+
 }
