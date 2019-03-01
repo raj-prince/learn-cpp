@@ -24,7 +24,7 @@ public:
         int sz = get_size();
         while (x < sz) {
             v[x] += val;
-            x = (x | (x - 1)) + 1;
+            x = (x | (x - 1)) + 1; // add: value as last significant bit.
         }
     }
 
@@ -34,7 +34,7 @@ public:
         T ans = 0;
         while (x > 0) {
             ans += v[x];
-            x &= (x - 1);
+            x &= (x - 1); // remove: value as last significant bit.
         }
         return ans;
     }
