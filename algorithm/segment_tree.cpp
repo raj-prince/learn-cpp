@@ -39,6 +39,7 @@ public:
         int z = x + ((y - l + 1) << 1);
         build(x + 1, l, y);
         build(z, y + 1, r);
+        pull(x, z);
     }
 
     void build(int x, int l, int r, const vector<node>& v) {
@@ -49,8 +50,8 @@ public:
         int y = (l + r) >> 1;
         int z = x + ((y - l + 1) << 1);
         build(x + 1, l, y, v);
-        build(z, y + 1, r, v); 
-        tree[x] = unite(tree[x + 1], tree[z]);
+        build(z, y + 1, r, v);
+        pull(x, z);
     }
 
     // put val at x.
@@ -66,7 +67,7 @@ public:
         } else {
             modify(z, y + 1, r, pos, val);
         }
-        tree[x] = unite(tree[x + 1], tree[z]);
+        pull(x, z);
     }
 
     // query
@@ -85,6 +86,10 @@ public:
                 return unite(query(x + 1, l, y, ll, rr), query(z, y + 1, r, ll, rr));
             }
         }
+    }
+
+    inline void pull(int x, int z) {
+        tree[x] = unite(tree[x + 1], tree[z]);
     }
 
     // user-friendly
