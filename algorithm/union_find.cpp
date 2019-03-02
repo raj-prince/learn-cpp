@@ -4,12 +4,13 @@
 using namespace std;
 
 class UnionFind {
-    vector<int> p, r; // paranet and rank vector.
+    vector<int> p, r, sz; // parent, rank and size vector.
 
 public:
     UnionFind(int _n = 0) {
         r.resize(_n, 0);
         p.resize(_n, 0);
+        sz.resize(_n, 1);
         for (int i = 0; i < _n; i++) {
             p[i] = i;
         }
@@ -32,8 +33,10 @@ public:
             int pj = find_set(j);
             if (r[pi] > r[pj]) { // rank heuristic.
                 p[pj] = pi;
+                sz[pi] += sz[pj];
             } else {
                 p[pi] = pj;
+                sz[pj] += sz[pi];
                 if (r[pi] == r[pj]) {
                     r[pj]++;
                 }
@@ -43,9 +46,9 @@ public:
 
     // return number of disjoint set.
     inline int disjoint_set() {
-        int sz = static_cast<int>(p.size());
+        int _sz = static_cast<int>(p.size());
         int cnt = 0;
-        for (int i = 0; i < sz; i++) {
+        for (int i = 0; i < _sz; i++) {
             if (p[i] == i) {
                 cnt++;
             }
@@ -53,9 +56,16 @@ public:
         return cnt;
     }
 
+    // return size of set, in which i belong to.
+    inline int size_of_set(int i) {
+        int pi = find_set(i);
+        return sz[pi];
+    }
+
     inline void clear() {
         p.clear();
         r.clear();
+        sz.clear();
     }
 };
 
@@ -69,4 +79,7 @@ int main() {
         uf.union_set(x, y);
     }
     cout << uf.disjoint_set() << endl;
+    for (int i = 0; i < n; i++) {
+        cout << i << " " << uf.size_of_set(i) << endl;
+    }
 }
