@@ -49,7 +49,7 @@ public:
         int z = x + ((y - l + 1) << 1);
         build(x + 1, l, y);
         build(z, y + 1, r);
-        tree[x] = unite(tree[x + 1], tree[z]);
+        pull(x, z);
     }
 
     void build(int x, int l, int r, const vector<node>& v) {
@@ -61,7 +61,7 @@ public:
         int z = x + ((y - l + 1) << 1);
         build(x + 1, l, y, v);
         build(z, y + 1, r, v);
-        tree[x] = unite(tree[x + 1], tree[z]);
+        pull(x, z);
     }
 
     node query(int x, int l, int r, int ll, int rr) {
