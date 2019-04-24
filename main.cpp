@@ -18,9 +18,19 @@ void f(T&& a, T&& b) {
     E(forward<T>(a), forward<T>(b));
 }
 
+
+class test{
+    public:
+    int a = 0;
+    void constMethod(int& b) const{
+        // a = 6;
+        b = 9;
+    }
+};
+
 int main() {
-    int i = 0, j = 1;
-    f(i, j);
-    f(0,stdj);
+    test e;
+    int a = 10;
+    e.constMethod(a);
     return 0;
 }
