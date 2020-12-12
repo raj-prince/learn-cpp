@@ -1,0 +1,9 @@
+template=algorithm/template.cpp
+fenwick_tree=algorithm/fenwick_tree.cpp
+head=algorithm/heap.cpp
+graph=algorithm/graph.cpp
+kmp=algorithm/kmp.cpp
+segment_tree=algorithm/segment_tree.cpp
+lazy_segment_tree=algorithm/lazy_segment_tree.cpp
+trie=algorithm/trie.cpp
+union_find=algorithm/union_find.cpp
