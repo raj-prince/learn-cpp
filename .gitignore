@@ -32,3 +32,7 @@
 *.app
 .vscode/
 *.DS_Store
+*.plist
+*input*
+*output*
+test.sh

@@ -1,90 +1,81 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <stack>
+#include <queue>
+#include <list>
 #include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
+#include <cstring>
 
 using namespace std;
-
-const int N = (int)1e5 + 10;
-
-int a[N];
-set<long long> st;
-
-// select pivot and do partition according to them.
-inline int doPartition(int l, int r) {
-    int i = l - 1;
-    int mx = a[l];
-    int mn = a[l];
-    for (int k = l; k <= r; k++) {
-        mx = max(mx, a[k]);
-        mn = min(mn, a[k]);
+ 
+#define dbg(...) dbs(#__VA_ARGS__, __VA_ARGS__)
+template <class T>
+void dbs(string str, T t) {
+    cerr << str << " : " << t << "\n";
+}
+template <class T, class... S>
+void dbs(string str, T t, S... s) {
+    int idx = str.find(',');
+    cerr << str.substr(0, idx) << " : " << t << ",";
+    dbs(str.substr(idx + 1), s...);
+}
+template <class S, class T>
+ostream &operator<<(ostream &os, const pair<S, T> &p) {
+    return os << "(" << p.first << ", " << p.second << ")";
+}
+template <class T>
+void debug(T a, T b) {
+    cerr << "[";
+    for (T i = a; i != b; ++i) {
+        if (i != a)
+            cerr << ", ";
+        cerr << *i;
     }
-    
-    int pvt = (mx + mn) >> 1;
-    
-    vector<int> v;
-    
-    for (int j = l; j <= r; j++) {
-        if (a[j] <= pvt) {
-            v.push_back(a[j]);
-        }
-    }
-    
-    int idx = l + v.size() - 1;
-    
-    for (int j = l; j <= r; j++) {
-        if (a[j] > pvt) {
-            v.push_back(a[j]);
-        }
-    }
-    for (int j = l; j <= r; j++) {
-        a[j] = v[j - l];
-    }
-    
-    return idx;
+    cerr << "]\n";
 }
 
-inline void quickSort(int l, int r) {
-    if (l < r) {
-        int q = doPartition(l, r);
+/** Code Starts */
+
+set<long long> possible;
+
+void traverse(const vector<int>& a, const vector<long long>& sum, int l, int r) {
+    
+    long long cur_sum = sum[r] - ((l > 0) ? sum[l - 1] : 0);
+    possible.insert(cur_sum);
+    
+    if (a[l] == a[r])
+        return;
         
-        if (q == r) {
-            long long sum = 0;
-            for (int i = l; i <= r; i++) {
-                sum += a[i];
-            }
-            st.insert(sum);
-            return;
+    int pvt = (a[l] + a[r]) / 2;
+    
+    int low = l, high = r;
+    while (low < high) {
+        
+        int mid = low + (high - low + 1) / 2;
+        
+        if (a[mid] <= pvt) {
+            low = mid;
+        } else {
+            high = mid - 1;
         }
-        
-        long long first_sum = 0;
-        long long second_sum = 0;
-        
-        for (int i = l; i <= r; i++) {
-            if (i <= q)
-                first_sum += a[i];
-            else
-                second_sum += a[i];
-        }
-        
-        st.insert(first_sum);
-        st.insert(second_sum);
-        
-        quickSort(l, q);
-        quickSort(q + 1, r);
-    } else {
-        st.insert(a[l]);
     }
     
-//    for (int i = l; i <= r; i++) {
-//        cout << a[i] << " ";
-//    }
-//    cout << endl;
+//    dbg(l, r, low);
+    
+    traverse(a, sum, l, low);
+    traverse(a, sum, low + 1, r);
 }
-
+ 
 int main() {
-
-    ios_base::sync_with_stdio(false);
+#ifdef LOCAL
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
+#endif
+    ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
     int test;
@@ -94,23 +85,33 @@ int main() {
         int n, q;
         cin >> n >> q;
         
+        vector<int> a(n);
         for (int i = 0; i < n; i++) {
             cin >> a[i];
         }
+        sort(a.begin(), a.end());
         
-        st.clear();
-        quickSort(0, n - 1);
+        vector<long long> pre_sum(n);
+        for (int i = 0; i < n; i++) {
+            pre_sum[i] = a[i];
+            
+            if (i > 0) {
+                pre_sum[i] += pre_sum[i - 1];
+            }
+        }
         
+        possible.clear();
+        traverse(a, pre_sum, 0, n - 1);
+//        debug(possible.begin(), possible.end());
+    
         while (q-- > 0) {
             int s;
             cin >> s;
             
-            if (st.find(s) != st.end()) {
-                cout << "Yes" << '\n';
-            } else {
-                cout << "No" << '\n';
-            }
+            cout << ((possible.find(s) != possible.end()) ? "Yes" : "No") << '\n';
         }
+        
     }
+    
+    return 0;
 }
-

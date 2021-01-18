@@ -1,36 +1,26 @@
-#include <iostream>
-#include <vector>
 
-using namespace std;
-
+/* Think as dynamic array to get cumulative sum: 0-indexing [0, n - 1] */
 template <class T>
-class FenwickTree { // think like 0-based indexing.
-    vector<T> v;
+class FenwickTree {
 
 public:
-    void init(int _sz) {
-        v.resize(_sz + 1, 0);
+    FenwickTree(int n = 0) {
+        v.resize(n + 1, 0);
     }
 
-    FenwickTree() {} // default constructor.
-
-    FenwickTree(int _sz = 0) {
-        init(_sz);
-    } // parameterized constructor.
-
-    // add val on index x.
-    void add(int x, T val) {
-        x++; // now, think like 0-indexing.
-        int sz = get_size();
+    /* Increment with val on index in the original array x */
+    void Increment(int x, T val) {
+        x++; // 0-indexing.
+        int sz = (int) v.size();
         while (x < sz) {
             v[x] += val;
             x = (x | (x - 1)) + 1; // add: value as last significant bit.
         }
     }
 
-    // get sum of elements of [0, x]
-    T get(int x) {
-        x++; // now will think like 0-indexing.
+    /* Returns sum of the value from [0, x] in the original array. */
+    T GetCumulativeSum(int x) {
+        x++; // 0-indexing.
         T ans = 0;
         while (x > 0) {
             ans += v[x];
@@ -39,24 +29,20 @@ public:
         return ans;
     }
 
-    T range_sum(int l, int r) {
-        return get(r) - get(l - 1);
-    }
-
-    void _clear() {
-        v.clear();
+    T GetRangeSum(int l, int r) {
+        return GetCumulativeSum(r) - GetCumulativeSum(l - 1);
     }
 
     // lower-bound over cumulative-sum array.
-    int _lower_bound(T x) {
-        int sz = get_size();
-        int mask = max_power_2(sz);
+    int LowerBound(T x) {
+        int sz = (int) v.size();
+        int mask = (1 << MaxSetBit(sz));
         int idx = 0;
         while (mask > 0 && idx < sz) {
-            int t_idx = idx + mask;
-            if (x >= v[t_idx]) {
-                idx = t_idx;
-                x -= v[t_idx];
+            int tempIdx = idx + mask;
+            if (x >= v[tempIdx]) {
+                idx = tempIdx;
+                x -= v[tempIdx];
             }
             mask >>= 1;
         }
@@ -64,29 +50,14 @@ public:
     }
 
     // upper-bound over cumulative-sum array.
-    int _upper_bound(T x) {
-        return _lower_bound(x + 1);
+    int UpperBound(T x) {
+        return UpperBound(x + 1);
     }
-
-    inline int get_size() {
-        int _sz = static_cast<int>(v.size());
-        return _sz;
+    
+private:
+    inline int MaxSetBit(int x) {
+        return (31 - __builtin_clz(x)); // 0-indexing.
     }
-
-    inline int max_power_2(int x) {
-        int last_set_bit = 31 - __builtin_clz(x); // 0-indexing.
-        return (1 << last_set_bit);
-    }
+    
+    vector<T> v;
 };
-
-int main() {
-    FenwickTree<int> fenwick_tree(10);
-    for (int i = 0; i < 10; i++) {
-        fenwick_tree.add(i, 1);
-    }
-    cout << "[0, 3] Sum: " << fenwick_tree.range_sum(0, 3) << endl;
-    cout << "Lower Bound: " << fenwick_tree._lower_bound(5) << endl; // 4 (0-indexed)
-    cout << "Upper Bound: " << fenwick_tree._upper_bound(5) << endl; // 5 (0-indexed)
-    return 0;
-
-}

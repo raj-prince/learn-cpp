@@ -9,7 +9,6 @@ function Create() {
     echo "Create File: ${1}"
     touch $1
     file_name="${CCODING_HOME}/algorithm/template.cpp"
-    echo $file_name
     cat $file_name >> $1
     xed $1
 }
@@ -24,7 +23,7 @@ function Append() {
 
 function Compile() {
     echo "Compiling file: ${1}"
-    g++ -std=c++17 "${1}" -o "${1}.out"
+    g++ -std=c++17 "${1}" -o "${1}.out" -DDEBUG
 }
 
 function Run() {

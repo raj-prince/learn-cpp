@@ -1,85 +1,66 @@
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
 class UnionFind {
-    vector<int> p, r, sz; // parent, rank and size vector.
-
 public:
-    UnionFind(int _n = 0) {
-        r.resize(_n, 0);
-        p.resize(_n, 0);
-        sz.resize(_n, 1);
-        for (int i = 0; i < _n; i++) {
-            p[i] = i;
+    UnionFind(int n = 0) {
+        r.resize(n, 0);
+        p.resize(n, 0);
+        iota(p.begin(), p.end(), 0);
+        sz.resize(n, 1);
+    }
+    
+    int FindSet(int x) {
+        if (p[x] != x) {
+            p[x] = FindSet(p[x]); // path compression heuristic.
         }
+        return p[x];
     }
-
-    inline bool is_same_set(int i, int j) {
-        return find_set(i) == find_set(j);
-    }
-
-    int find_set(int i) {
-        if (p[i] != i) {
-            p[i] = find_set(p[i]); // path compression heuristic.
+    
+    /* true: means both x and y were in different set and now merged. */
+    bool UnionSet(int x, int y) {
+    
+        if (IsInSameSet(x, y))
+            return false;
+            
+        int px = FindSet(x);
+        int py = FindSet(y);
+        
+        /* Rank heuristic: Append in the tree of higher rank. */
+        /* Think px as the owner of tree with higher rank. */
+        if (r[px] < r[py]) {
+            swap(px, py);
         }
-        return p[i];
-    }
-
-    void union_set(int i, int j) {
-        if (!is_same_set(i, j)) {
-            int pi = find_set(i);
-            int pj = find_set(j);
-            if (r[pi] > r[pj]) { // rank heuristic.
-                p[pj] = pi;
-                sz[pi] += sz[pj];
-            } else {
-                p[pi] = pj;
-                sz[pj] += sz[pi];
-                if (r[pi] == r[pj]) {
-                    r[pj]++;
-                }
-            }
+        
+        p[py] = px;
+        sz[px] += sz[py];
+        
+        if (r[px] == r[py]) {
+            r[px]++;
         }
+        
+        return true;
     }
-
-    // return number of disjoint set.
-    inline int disjoint_set() {
-        int _sz = static_cast<int>(p.size());
+    
+    int GetNumberOfDisjointSet() {
+        int n = static_cast<int>(p.size());
         int cnt = 0;
-        for (int i = 0; i < _sz; i++) {
-            if (p[i] == i) {
+        for (int i = 0; i < n; i++) {
+            
+            if (p[i] == i)
                 cnt++;
-            }
         }
+        
         return cnt;
     }
-
-    // return size of set, in which i belong to.
-    inline int size_of_set(int i) {
-        int pi = find_set(i);
-        return sz[pi];
+    
+    /* Get size of set in which x belongs to.*/
+    int GetSizeOfSet(int x) {
+        int px = FindSet(x);
+        return sz[px];
     }
-
-    inline void clear() {
-        p.clear();
-        r.clear();
-        sz.clear();
+    
+private:
+    bool IsInSameSet(int x, int y) {
+        return FindSet(x) == FindSet(y);
     }
+    
+    vector<int> p, r, sz; // parent, rank and size.
 };
-
-int main() {
-    int n, m;
-    cin >> n >> m;
-    UnionFind uf(n);
-    while (m-- > 0) {
-        int x, y;
-        cin >> x >> y;
-        uf.union_set(x, y);
-    }
-    cout << uf.disjoint_set() << endl;
-    for (int i = 0; i < n; i++) {
-        cout << i << " " << uf.size_of_set(i) << endl;
-    }
-}
